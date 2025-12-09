@@ -8,14 +8,13 @@ document.getElementById("login").onclick = () => {
     
     const auth_url = new URL("https://accounts.spotify.com/authorize");
 
-    auth_url.searchParams.append("response_type", "token"); /
+    auth_url.searchParams.append("client_id", client_id);
+    auth_url.searchParams.append("response_type", "token");
     auth_url.searchParams.append("scope", scope);
     auth_url.searchParams.append("redirect_uri", redirect_uri);
     auth_url.searchParams.append("state", state);
 
     window.location = auth_url.toString();
-
-    console.log("login.js loaded!");
 };
 
 function generateRandomString(length) {
