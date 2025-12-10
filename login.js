@@ -1,5 +1,5 @@
 const client_id = "13ff8254c56d4ad2910cee29e3c4d1aa"; 
-const redirect_uri = "https://simona185.github.io/MiniSpotify/callback.html";
+const redirect_uri = "http://127.0.0.1:5500/callback.html";
 
 document.getElementById("login").onclick = () => {
     const scope = "user-read-private user-top-read";
