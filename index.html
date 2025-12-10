@@ -1,13 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MiniSpotify</title>
+  <meta charset="UTF-8">
+  <title>MiniSpotify</title>
+  <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
-  <h1>MiniSpotify</h1>
-  <button id="login">Login with Spotify</button>
+  <h1>MiniSpotify</h1>
+  
+    <button id="login-button">Login with Spotify</button>
 
-  <script src="login.js"></script> 
+  <div id="app-container" class="hidden">
+      <h2>Welcome, <span id="username"></span>!</h2>
+      <img id="profile-pic" src="" width="150" alt="Profile Picture">
+      <p>Email: <span id="email"></span></p>
+
+      <input type="text" id="search" placeholder="Search tracks, artists or albums...">
+      <div id="search-results" class="grid"></div>
+
+      <h2>Top 5 Artists</h2>
+      <div id="top-artists" class="grid"></div>
+
+      <h2>Top 5 Albums</h2>
+      <div id="top-albums" class="grid"></div>
+  </div>
+
+  <script type="module" src="auth.js"></script>
+  <script type="module" src="app.js"></script>
+
+  <script type="module">
+    // Script de inițializare
+    import { redirectToAuthCodeFlow } from './auth.js';
+    import { initApp } from './app.js';
+    
+    const accessToken = localStorage.getItem('access_token');
+    
+    if (accessToken) {
+        // Dacă tokenul există, arată aplicația
+        document.getElementById('login-button').classList.add('hidden');
+        document.getElementById('app-container').classList.remove('hidden');
+        initApp(accessToken); // Transmitem tokenul către funcția de inițializare
+    } else {
+        // Dacă nu, arată butonul de login
+        document.getElementById('login-button').onclick = redirectToAuthCodeFlow;
+    }
+  </script>
 </body>
 </html>

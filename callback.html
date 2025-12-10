@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MiniSpotify</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>MiniSpotify - Autentificare...</title>
 </head>
 <body>
-  <h1>Autentificare...</h1>
+    <h1>Se procesează autentificarea. Vă rugăm așteptați...</h1>
+    <p id="error-message" style="color: red;"></p>
+    
+    <script type="module">
+        import { exchangeCodeForToken } from './auth.js'; 
 
-  <!-- Profile -->
-  <div id="profile" class="hidden">
-    <img id="profile-pic" src="" alt="Profile Picture">
-    <h2 id="username"></h2>
-    <p id="email"></p>
-  </div>
+        async function handleCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const errorElement = document.getElementById('error-message');
 
-  <!-- Top 5 Albums -->
-  <h2>Top 5 Albume</h2>
-  <div id="top-albums" class="grid"></div>
-
-  <!-- Top 5 Artists -->
-  <h2>Top 5 Artiști</h2>
-  <div id="top-artists" class="grid"></div>
-
-  <!-- Search -->
-  <h2>Căutare</h2>
-  <input type="text" id="search" placeholder="Caută melodii, albume sau artiști...">
-  <div id="search-results" class="grid"></div>
-
-  <script src="app.js"></script>
+            if (code) {
+                try {
+                    await exchangeCodeForToken(code);
+                    // Daca schimbul a reusit, redirectionam la pagina principala
+                    window.location.href = 'index.html'; 
+                } catch (error) {
+                    document.querySelector('h1').innerText = "Eroare de procesare a token-ului!";
+                    errorElement.innerText = error.message;
+                }
+            } else {
+                document.querySelector('h1').innerText = "Eroare: Cod de autorizare lipsă.";
+                errorElement.innerText = "Ați anulat autentificarea sau a apărut o eroare neașteptată.";
+            }
+        }
+        
+        handleCallback();
+    </script>
 </body>
 </html>
