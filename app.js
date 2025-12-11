@@ -1,4 +1,4 @@
-import { getUserProfile, getTopArtists, getSavedAlbums, getAlbumTracks, searchSpotify, playTrack, pauseTrack } from "./api.js";
+import { getUserProfile, getTopArtists, getSavedAlbums, getAlbumTracks, searchSpotify, playTrack, pauseTrack, transferPlayback } from "./api.js";
 
 let searchTimeout;
 let currentDeviceId = null;
@@ -62,6 +62,23 @@ function initSpotifyPlayer(token) {
         }
       });
 
+      // Setează device ID când playerul este gata
+      player.addListener('ready', ({ device_id }) => {
+        currentDeviceId = device_id;
+        console.log('Player ready, device ID:', currentDeviceId);
+        transferPlayback(currentDeviceId, false).then(ok => {
+          if (ok) {
+            console.log('Playback transferat pe device-ul web.');
+          } else {
+            console.warn('Nu s-a putut transfera playback-ul.');
+          }
+        }).catch(err => console.error('Eroare transfer playback:', err));
+      });
+
+      player.addListener('not_ready', ({ device_id }) => {
+        console.warn('Device nu este gata:', device_id);
+      });
+
       player.addListener('initialization_error', ({ message }) => {
         console.error('Initialization error:', message);
       });
@@ -112,19 +129,33 @@ window.onload = async () => {
     const profileImage = profile.images?.[0]?.url || "https://via.placeholder.com/120?text=Profil";
     
     document.getElementById("app-container").innerHTML = `
-      <div class="profile-section">
-        <h2>Hello, ${profile.display_name}!</h2>
-        <img src="${profileImage}" width="120" alt="Profile">
-        <p>Email: ${profile.email}</p>
+      <div class="app-layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <div class="brand">MiniSpotify</div>
+          </div>
+          <div class="menu">
+            <button id="home-btn" class="menu-btn active">Home</button>
+            <button id="search-btn" class="menu-btn">Caută</button>
+            <button id="artists" class="menu-btn">Top 5 Artiști</button>
+            <button id="albums" class="menu-btn">Top 5 Albume</button>
+          </div>
+          <button id="logout" class="menu-btn logout-btn">Logout</button>
+        </aside>
+        <main class="main-content">
+          <section id="home-panel" class="panel">
+            <div class="profile-section">
+              <h2>Hello, ${profile.display_name}!</h2>
+              <img src="${profileImage}" width="120" alt="Profile">
+              <p>Email: ${profile.email}</p>
+            </div>
+          </section>
+          <section class="panel">
+            <div id="output-artists"></div>
+            <div id="output-albums"></div>
+          </section>
+        </main>
       </div>
-      <div class="button-group">
-        <button id="search-btn">Caută</button>
-        <button id="artists">Top 5 Artiști</button>
-        <button id="albums">Top 5 Albume</button>
-        <button id="logout">Logout</button>
-      </div>
-      <div id="output-artists"></div>
-      <div id="output-albums"></div>
     `;
 
     // Search functionality

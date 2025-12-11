@@ -67,3 +67,16 @@ export async function pauseTrack(deviceId) {
   });
   return res.status === 204;
 }
+
+export async function transferPlayback(deviceId, shouldPlay = false) {
+  const token = getToken();
+  const res = await fetch("https://api.spotify.com/v1/me/player", {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ device_ids: [deviceId], play: shouldPlay })
+  });
+  return res.status === 204;
+}
