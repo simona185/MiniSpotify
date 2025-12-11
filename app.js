@@ -72,28 +72,20 @@ window.onload = async () => {
     const profileImage = profile.images?.[0]?.url || "https://via.placeholder.com/120?text=Profil";
     
     document.getElementById("app-container").innerHTML = `
-      <div style="padding:20px; max-width:1200px; margin:0 auto; padding-bottom:100px;">
+      <div class="profile-section">
         <h2>Hello, ${profile.display_name}!</h2>
-        <img src="${profileImage}" width="120" style="border-radius: 50%; margin:10px 0;">
+        <img src="${profileImage}" width="120" alt="Profile">
         <p>Email: ${profile.email}</p>
-        <p style="color:#999; font-size:0.9rem;">Player Status: <span id="player-status">Conectarea...</span></p>
-        <button id="search-btn" style="margin-right:10px;">🔍 Caută</button>
-        <button id="artists" style="margin-right:10px;">🎵 Top 5 Artiști</button>
-        <button id="albums" style="margin-right:10px;">💿 Top 5 Albume</button>
-        <button id="logout">Logout</button>
-        <div id="output-artists" style="margin-top:15px;"></div>
-        <div id="output-albums" style="margin-top:15px;"></div>
       </div>
+      <div class="button-group">
+        <button id="search-btn">🔍 Caută</button>
+        <button id="artists">🎵 Top 5 Artiști</button>
+        <button id="albums">💿 Top 5 Albume</button>
+        <button id="logout">Logout</button>
+      </div>
+      <div id="output-artists"></div>
+      <div id="output-albums"></div>
     `;
-
-    // Actualizează status playerului
-    if (currentDeviceId) {
-      document.getElementById("player-status").textContent = "✅ Conectat";
-      document.getElementById("player-status").style.color = "#1DB954";
-    } else {
-      document.getElementById("player-status").textContent = "⚠️ Se conectează...";
-      document.getElementById("player-status").style.color = "#ff9800";
-    }
 
     // Search functionality
     document.getElementById("search-btn").onclick = () => {
@@ -130,21 +122,47 @@ window.onload = async () => {
     // Top Artists
     document.getElementById("artists").onclick = async () => {
       const data = await getTopArtists();
-      document.getElementById("output-artists").innerHTML = "<h3>🎵 Artiștii tăi preferați:</h3>" + 
-        data.items.map(a => `<p>• ${a.name}</p>`).join("");
+      const artistCards = data.items.map(artist => {
+        const image = artist.images?.[0]?.url || "https://via.placeholder.com/160?text=Artist";
+        const followers = artist.followers?.total?.toLocaleString('ro-RO') || '0';
+        const spotifyUrl = artist.external_urls?.spotify || '#';
+        return `
+          <div class="artist-card">
+            <img src="${image}" alt="${artist.name}">
+            <h4>${artist.name}</h4>
+            <p class="artist-followers">👥 ${followers} urmăritori</p>
+            <button onclick="window.open('${spotifyUrl}', '_blank')">🎵 Ascultă pe Spotify</button>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("output-artists").innerHTML = `
+        <h3 class="section-title">🎵 Artiștii tăi preferați</h3>
+        <div class="artists-grid">${artistCards}</div>
+      `;
     };
 
     // Top Albums
     document.getElementById("albums").onclick = async () => {
       const data = await getSavedAlbums();
       const items = data.items || [];
-      document.getElementById("output-albums").innerHTML = "<h3>💿 Albumele tale salvate:</h3>" +
-        items.map(entry => {
-          const album = entry.album;
-          const cover = album.images?.[0]?.url ? `<img src="${album.images[0].url}" width="80" style="border-radius:8px; vertical-align:middle; margin-right:10px;">` : "";
-          const artists = album.artists?.map(a => a.name).join(", ") || "Artist necunoscut";
-          return `<p>${cover}<strong>${album.name}</strong> – ${artists}</p>`;
-        }).join("");
+      const albumsList = items.map(entry => {
+        const album = entry.album;
+        const cover = album.images?.[0]?.url || "https://via.placeholder.com/80?text=Album";
+        const artists = album.artists?.map(a => a.name).join(", ") || "Artist necunoscut";
+        return `
+          <div class="album-item">
+            <img src="${cover}" width="80" alt="${album.name}">
+            <div>
+              <strong>${album.name}</strong><br>
+              <span style="color:#b3b3b3;">${artists}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("output-albums").innerHTML = `
+        <h3 class="section-title">💿 Albumele tale salvate</h3>
+        <div class="albums-list">${albumsList}</div>
+      `;
     };
 
     // Logout
