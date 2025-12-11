@@ -1,37 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MiniSpotify - Autentificare...</title>
+  <meta charset="UTF-8">
+  <title>Spotify Callback</title>
 </head>
 <body>
-    <h1>Se procesează autentificarea. Vă rugăm așteptați...</h1>
-    <p id="error-message" style="color: red;"></p>
-    
-    <script type="module">
-        import { exchangeCodeForToken } from './auth.js'; 
 
-        async function handleCallback() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const errorElement = document.getElementById('error-message');
+  <h2>Logging in…</h2>
 
-            if (code) {
-                try {
-                    await exchangeCodeForToken(code);
-                    // Daca schimbul a reusit, redirectionam la pagina principala
-                    window.location.href = 'index.html'; 
-                } catch (error) {
-                    document.querySelector('h1').innerText = "Eroare de procesare a token-ului!";
-                    errorElement.innerText = error.message;
-                }
-            } else {
-                document.querySelector('h1').innerText = "Eroare: Cod de autorizare lipsă.";
-                errorElement.innerText = "Ați anulat autentificarea sau a apărut o eroare neașteptată.";
-            }
-        }
-        
-        handleCallback();
-    </script>
+  <script type="module">
+    import { handleCallback } from './auth.js';
+    handleCallback();
+  </script>
+
 </body>
 </html>

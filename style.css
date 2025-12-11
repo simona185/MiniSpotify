@@ -1,32 +1,59 @@
-.hidden { display: none; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
 
 body {
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
+  background-color: #121212;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #fff;
 }
 
-h1, h2 { text-align: center; }
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
+.login-container {
+  background-color: #023213;
+  padding: 80px 30px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 800px;
+  height: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  justify-content: center;
 }
 
-.card {
-    background: #f3f3f3;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
+.spotify-logo {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 200px;
+  border-radius: 0;
 }
 
-input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
+h1 {
+  margin-bottom: 25px;
+  font-size: 3rem;
+  text-align: center;
+}
+
+button {
+  background-color: #1DB954;
+  color: #000000;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #a8f4c2;
+  color: #000000;
 }
