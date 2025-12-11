@@ -1,10 +1,48 @@
-import { getUserProfile, getTopArtists, getSavedAlbums, searchSpotify, playTrack, pauseTrack } from "./api.js";
+import { getUserProfile, getTopArtists, getSavedAlbums, getAlbumTracks, searchSpotify, playTrack, pauseTrack } from "./api.js";
 
 let searchTimeout;
 let currentDeviceId = null;
 let player = null;
 let isArtistsVisible = false;
 let isAlbumsVisible = false;
+
+function handlePlayButtons(container = document) {
+  container.querySelectorAll(".play-track-btn").forEach(btn => {
+    btn.onclick = async (e) => {
+      e.stopPropagation();
+      const trackUri = btn.getAttribute("data-uri");
+      const trackName = btn.getAttribute("data-name");
+      const trackArtist = btn.getAttribute("data-artist");
+      const trackImage = btn.getAttribute("data-image");
+
+      if (!currentDeviceId) {
+        alert("⚠️ Player nu este conectat. Asteaptă un moment...\n\nVERIFICĂ:\n1. Ai Spotify Premium?\n2. Spotify este deschis pe alt dispozitiv?\n3. Reîncarcă pagina");
+        return;
+      }
+
+      btn.textContent = "⏳";
+      btn.disabled = true;
+
+      try {
+        const success = await playTrack(currentDeviceId, trackUri);
+        if (success) {
+          document.getElementById("player-bar").style.display = "block";
+          document.getElementById("current-track-name").textContent = trackName;
+          document.getElementById("current-track-artist").textContent = trackArtist;
+          document.getElementById("current-track-image").src = trackImage;
+        } else {
+          alert("❌ Eroare la redare. Verifică dacă ai Spotify Premium!");
+        }
+      } catch (error) {
+        console.error("Eroare:", error);
+        alert("❌ Eroare: " + error.message);
+      } finally {
+        btn.textContent = "▶";
+        btn.disabled = false;
+      }
+    };
+  });
+}
 
 // Inițializează playerul ÎNAINTE de window.onload
 function initSpotifyPlayer(token) {
@@ -80,9 +118,9 @@ window.onload = async () => {
         <p>Email: ${profile.email}</p>
       </div>
       <div class="button-group">
-        <button id="search-btn">🔍 Caută</button>
-        <button id="artists">🎵 Top 5 Artiști</button>
-        <button id="albums">💿 Top 5 Albume</button>
+        <button id="search-btn">Caută</button>
+        <button id="artists">Top 5 Artiști</button>
+        <button id="albums">Top 5 Albume</button>
         <button id="logout">Logout</button>
       </div>
       <div id="output-artists"></div>
@@ -165,12 +203,15 @@ window.onload = async () => {
         const cover = album.images?.[0]?.url || "https://via.placeholder.com/80?text=Album";
         const artists = album.artists?.map(a => a.name).join(", ") || "Artist necunoscut";
         return `
-          <div class="album-item">
-            <img src="${cover}" width="80" alt="${album.name}">
-            <div>
-              <strong>${album.name}</strong><br>
-              <span style="color:#b3b3b3;">${artists}</span>
+          <div class="album-item" data-album-id="${album.id}" data-album-cover="${cover}">
+            <div class="album-header">
+              <img src="${cover}" width="80" alt="${album.name}">
+              <div>
+                <strong>${album.name}</strong><br>
+                <span style="color:#b3b3b3;">${artists}</span>
+              </div>
             </div>
+            <div class="album-tracks" id="tracks-${album.id}" style="display:none;"></div>
           </div>
         `;
       }).join("");
@@ -178,6 +219,55 @@ window.onload = async () => {
         <h3 class="section-title">💿 Albumele tale salvate</h3>
         <div class="albums-list">${albumsList}</div>
       `;
+
+      document.querySelectorAll(".album-item").forEach(item => {
+        item.onclick = async () => {
+          const albumId = item.getAttribute("data-album-id");
+          const albumCover = item.getAttribute("data-album-cover") || "https://via.placeholder.com/80?text=Album";
+          const tracksContainer = document.getElementById(`tracks-${albumId}`);
+
+          if (tracksContainer.style.display === "block") {
+            tracksContainer.style.display = "none";
+            return;
+          }
+
+          tracksContainer.innerHTML = "<p style='color:#999;'>Se încarcă melodiile...</p>";
+          tracksContainer.style.display = "block";
+
+          try {
+            const tracksData = await getAlbumTracks(albumId);
+            const tracks = tracksData.items || [];
+            if (!tracks.length) {
+              tracksContainer.innerHTML = "<p style='color:#999;'>Nicio melodie găsită.</p>";
+              return;
+            }
+
+            const tracksList = tracks.map(track => {
+              const artists = track.artists?.map(a => a.name).join(", ") || "Artist necunoscut";
+              const cover = albumCover;
+              const spotifyUrl = track.external_urls?.spotify || "";
+              return `
+                <div class="track-row" style="display:flex; align-items:center; justify-content:space-between; padding:6px 8px; background:#1a1a1a; border-radius:6px; margin:4px 0;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${cover}" width="45" style="border-radius:6px;" alt="${track.name}">
+                    <div>
+                      <strong>${track.name}</strong><br>
+                      <span style="color:#b3b3b3; font-size:0.9rem;">${artists}</span>
+                    </div>
+                  </div>
+                  <button style="min-width:46px;" onclick="${spotifyUrl ? `window.open('${spotifyUrl}', '_blank')` : "alert('Link indisponibil')"}">▶</button>
+                </div>
+              `;
+            }).join("");
+
+            tracksContainer.innerHTML = tracksList;
+          } catch (err) {
+            console.error("Eroare la încărcarea melodiilor albumului:", err);
+            tracksContainer.innerHTML = "<p style='color:#ff6b6b;'>Eroare la încărcarea melodiilor.</p>";
+          }
+        };
+      });
+
       isAlbumsVisible = true;
     };
 
@@ -242,40 +332,7 @@ function displaySearchResults(results) {
   document.getElementById("search-results").innerHTML = html || "<p style='color:#999;'>Niciun rezultat găsit</p>";
 
   // Attach play handlers
-  document.querySelectorAll(".play-track-btn").forEach(btn => {
-    btn.onclick = async () => {
-      const trackUri = btn.getAttribute("data-uri");
-      const trackName = btn.getAttribute("data-name");
-      const trackArtist = btn.getAttribute("data-artist");
-      const trackImage = btn.getAttribute("data-image");
-
-      if (!currentDeviceId) {
-        alert("⚠️ Player nu este conectat. Asteaptă un moment...\n\nVERIFICĂ:\n1. Ai Spotify Premium?\n2. Spotify este deschis pe alt dispozitiv?\n3. Reîncarcă pagina");
-        return;
-      }
-
-      btn.textContent = "⏳";
-      btn.disabled = true;
-
-      try {
-        const success = await playTrack(currentDeviceId, trackUri);
-        if (success) {
-          document.getElementById("player-bar").style.display = "block";
-          document.getElementById("current-track-name").textContent = trackName;
-          document.getElementById("current-track-artist").textContent = trackArtist;
-          document.getElementById("current-track-image").src = trackImage;
-        } else {
-          alert("❌ Eroare la redare. Verifică dacă ai Spotify Premium!");
-        }
-      } catch (error) {
-        console.error("Eroare:", error);
-        alert("❌ Eroare: " + error.message);
-      } finally {
-        btn.textContent = "▶";
-        btn.disabled = false;
-      }
-    };
-  });
+  handlePlayButtons(document);
 }
 
 // Player controls

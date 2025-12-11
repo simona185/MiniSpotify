@@ -38,6 +38,14 @@ export async function getSavedAlbums(limit = 5) {
   return res.json();
 }
 
+export async function getAlbumTracks(albumId) {
+  const token = getToken();
+  const res = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks?limit=50`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.json();
+}
+
 export async function playTrack(deviceId, trackUri) {
   const token = getToken();
   const res = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
