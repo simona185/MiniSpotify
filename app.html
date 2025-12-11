@@ -13,26 +13,26 @@
   </div>
 
   <!-- Search Modal -->
-  <div id="search-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; padding:20px;">
-    <div style="background:#1a1a1a; border-radius:15px; max-width:700px; margin:50px auto; padding:20px; color:#fff;">
-      <button id="close-search" style="float:right; background:#555; padding:8px 15px; font-size:16px; border:none; cursor:pointer; border-radius:5px;">✕</button>
-      <h2 style="margin-bottom:15px;">Caută Piese, Artiști sau Albume</h2>
-      <input type="text" id="search-input" placeholder="Scrie pentru a căuta..." style="width:100%; padding:12px; font-size:16px; border-radius:8px; border:none; margin-bottom:15px;">
-      <div id="search-results" style="max-height:500px; overflow-y:auto;"></div>
+  <div id="search-modal" class="search-modal">
+    <div class="search-content">
+      <button id="close-search" class="close-search">✕</button>
+      <h2>Caută Piese, Artiști sau Albume</h2>
+      <input type="text" id="search-input" placeholder="Scrie pentru a căuta...">
+      <div id="search-results" class="search-results"></div>
     </div>
   </div>
 
   <!-- Player Bar -->
-  <div id="player-bar" style="position:fixed; bottom:0; left:0; width:100%; background:#1DB954; padding:15px 20px; display:none; z-index:999;">
-    <div style="display:flex; align-items:center; gap:15px;">
-      <img id="current-track-image" src="" width="50" style="border-radius:5px;">
-      <div style="flex:1;">
-        <p id="current-track-name" style="margin:0; font-weight:bold;">-</p>
-        <p id="current-track-artist" style="margin:0; font-size:0.9rem;">-</p>
+  <div id="player-bar" class="player-bar">
+    <div class="player-content">
+      <img id="current-track-image" src="" alt="Track">
+      <div class="track-meta">
+        <p id="current-track-name">-</p>
+        <p id="current-track-artist">-</p>
       </div>
-      <button id="play-btn" style="background:#000; color:#1DB954; padding:10px 20px; border:none; cursor:pointer; border-radius:5px;">▶ Play</button>
-      <button id="pause-btn" style="background:#000; color:#1DB954; padding:10px 20px; border:none; cursor:pointer; border-radius:5px;">⏸ Pause</button>
-      <button id="close-player" style="background:#000; color:#1DB954; padding:10px 20px; border:none; cursor:pointer; border-radius:5px;">✕</button>
+      <button id="play-btn" class="player-btn">▶ Play</button>
+      <button id="pause-btn" class="player-btn">⏸ Pause</button>
+      <button id="close-player" class="player-btn">✕</button>
     </div>
   </div>
 
