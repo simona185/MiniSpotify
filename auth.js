@@ -5,7 +5,10 @@ export const scopes = [
   "user-read-email",
   "user-read-private",
   "user-top-read",
-  "user-library-read"
+  "user-library-read",
+  "streaming",
+  "user-modify-playback-state",
+  "user-read-playback-state"
 ].join(" ");
 
 // ---------- PKCE HELPERS ----------
