@@ -3,6 +3,8 @@ import { getUserProfile, getTopArtists, getSavedAlbums, searchSpotify, playTrack
 let searchTimeout;
 let currentDeviceId = null;
 let player = null;
+let isArtistsVisible = false;
+let isAlbumsVisible = false;
 
 // Inițializează playerul ÎNAINTE de window.onload
 function initSpotifyPlayer(token) {
@@ -121,6 +123,12 @@ window.onload = async () => {
 
     // Top Artists
     document.getElementById("artists").onclick = async () => {
+      if (isArtistsVisible) {
+        document.getElementById("output-artists").innerHTML = "";
+        isArtistsVisible = false;
+        return;
+      }
+
       const data = await getTopArtists();
       const artistCards = data.items.map(artist => {
         const image = artist.images?.[0]?.url || "https://via.placeholder.com/160?text=Artist";
@@ -139,10 +147,17 @@ window.onload = async () => {
         <h3 class="section-title">🎵 Artiștii tăi preferați</h3>
         <div class="artists-grid">${artistCards}</div>
       `;
+      isArtistsVisible = true;
     };
 
     // Top Albums
     document.getElementById("albums").onclick = async () => {
+      if (isAlbumsVisible) {
+        document.getElementById("output-albums").innerHTML = "";
+        isAlbumsVisible = false;
+        return;
+      }
+
       const data = await getSavedAlbums();
       const items = data.items || [];
       const albumsList = items.map(entry => {
@@ -163,6 +178,7 @@ window.onload = async () => {
         <h3 class="section-title">💿 Albumele tale salvate</h3>
         <div class="albums-list">${albumsList}</div>
       `;
+      isAlbumsVisible = true;
     };
 
     // Logout
