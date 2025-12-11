@@ -4,7 +4,8 @@ export const redirectUri = "http://127.0.0.1:5500/callback.html";
 export const scopes = [
   "user-read-email",
   "user-read-private",
-  "user-top-read"
+  "user-top-read",
+  "user-library-read"
 ].join(" ");
 
 // ---------- PKCE HELPERS ----------

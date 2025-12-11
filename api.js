@@ -25,3 +25,11 @@ export async function searchSpotify(query) {
   });
   return res.json();
 }
+
+export async function getSavedAlbums(limit = 5) {
+  const token = getToken();
+  const res = await fetch(`https://api.spotify.com/v1/me/albums?limit=${limit}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.json();
+}
