@@ -177,12 +177,12 @@ window.onload = async () => {
             <img src="${image}" alt="${artist.name}">
             <h4>${artist.name}</h4>
             <p class="artist-followers">👥 ${followers} urmăritori</p>
-            <button onclick="window.open('${spotifyUrl}', '_blank')">🎵 Ascultă pe Spotify</button>
+            <button onclick="window.open('${spotifyUrl}', '_blank')">Ascultă pe Spotify</button>
           </div>
         `;
       }).join("");
       document.getElementById("output-artists").innerHTML = `
-        <h3 class="section-title">🎵 Artiștii tăi preferați</h3>
+        <h3 class="section-title">Artiștii tăi preferați</h3>
         <div class="artists-grid">${artistCards}</div>
       `;
       isArtistsVisible = true;
@@ -216,7 +216,7 @@ window.onload = async () => {
         `;
       }).join("");
       document.getElementById("output-albums").innerHTML = `
-        <h3 class="section-title">💿 Albumele tale salvate</h3>
+        <h3 class="section-title">Albumele tale salvate</h3>
         <div class="albums-list">${albumsList}</div>
       `;
 
@@ -245,7 +245,6 @@ window.onload = async () => {
             const tracksList = tracks.map(track => {
               const artists = track.artists?.map(a => a.name).join(", ") || "Artist necunoscut";
               const cover = albumCover;
-              const spotifyUrl = track.external_urls?.spotify || "";
               return `
                 <div class="track-row" style="display:flex; align-items:center; justify-content:space-between; padding:6px 8px; background:#1a1a1a; border-radius:6px; margin:4px 0;">
                   <div style="display:flex; align-items:center; gap:10px;">
@@ -255,12 +254,13 @@ window.onload = async () => {
                       <span style="color:#b3b3b3; font-size:0.9rem;">${artists}</span>
                     </div>
                   </div>
-                  <button style="min-width:46px;" onclick="${spotifyUrl ? `window.open('${spotifyUrl}', '_blank')` : "alert('Link indisponibil')"}">▶</button>
+                  <button class="play-track-btn" data-uri="${track.uri}" data-name="${track.name}" data-artist="${artists}" data-image="${cover}" style="min-width:46px;">▶</button>
                 </div>
               `;
             }).join("");
 
             tracksContainer.innerHTML = tracksList;
+            handlePlayButtons(tracksContainer);
           } catch (err) {
             console.error("Eroare la încărcarea melodiilor albumului:", err);
             tracksContainer.innerHTML = "<p style='color:#ff6b6b;'>Eroare la încărcarea melodiilor.</p>";
