@@ -16,11 +16,10 @@ function handlePlayButtons(container = document) {
       const trackImage = btn.getAttribute("data-image");
 
       if (!currentDeviceId) {
-        alert("⚠️ Player nu este conectat. Asteaptă un moment...\n\nVERIFICĂ:\n1. Ai Spotify Premium?\n2. Spotify este deschis pe alt dispozitiv?\n3. Reîncarcă pagina");
+        alert("Player nu este conectat. Asteaptă un moment...\n\nVERIFICĂ:\n1. Ai Spotify Premium?\n2. Spotify este deschis pe alt dispozitiv?\n3. Reîncarcă pagina");
         return;
       }
 
-      btn.textContent = "⏳";
       btn.disabled = true;
 
       try {
@@ -31,11 +30,11 @@ function handlePlayButtons(container = document) {
           document.getElementById("current-track-artist").textContent = trackArtist;
           document.getElementById("current-track-image").src = trackImage;
         } else {
-          alert("❌ Eroare la redare. Verifică dacă ai Spotify Premium!");
+          alert("Eroare la redare. Verifică dacă ai Spotify Premium!");
         }
       } catch (error) {
         console.error("Eroare:", error);
-        alert("❌ Eroare: " + error.message);
+        alert("Eroare: " + error.message);
       } finally {
         btn.textContent = "▶";
         btn.disabled = false;
@@ -44,7 +43,7 @@ function handlePlayButtons(container = document) {
   });
 }
 
-// Inițializează playerul ÎNAINTE de window.onload
+//initializeaza playerul inainte de window.onload
 function initSpotifyPlayer(token) {
   return new Promise((resolve) => {
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -54,7 +53,7 @@ function initSpotifyPlayer(token) {
         volume: 0.5
       });
 
-      // Ascultă schimbări de stare
+      //asculta schimbari de stare
       player.addListener('player_state_changed', state => {
         if (state && state.device_id) {
           currentDeviceId = state.device_id;
@@ -62,7 +61,7 @@ function initSpotifyPlayer(token) {
         }
       });
 
-      // Setează device ID când playerul este gata
+      //seteaza device ID cand playerul este gata
       player.addListener('ready', ({ device_id }) => {
         currentDeviceId = device_id;
         console.log('Player ready, device ID:', currentDeviceId);
@@ -91,19 +90,19 @@ function initSpotifyPlayer(token) {
         console.error('Account error:', message);
       });
 
-      // Conectează playerul
+      //conectează playerul
       player.connect().then(success => {
         if (success) {
-          console.log('✅ Spotify Player conectat cu succes!');
+          console.log('Spotify Player conectat cu succes!');
           resolve(true);
         } else {
-          console.error('❌ Nu s-a putut conecta playerul');
+          console.error('Nu s-a putut conecta playerul');
           resolve(false);
         }
       });
     };
 
-    // Forțează reinitializarea SDK-ului
+    //forteaza reinitializarea SDK-ului
     if (window.Spotify && window.Spotify.Player) {
       window.onSpotifyWebPlaybackSDKReady();
     }
@@ -118,10 +117,10 @@ window.onload = async () => {
     return;
   }
 
-  // Inițializează playerul mai întâi
+  //initializeaza playerul mai intai
   await initSpotifyPlayer(token);
 
-  // Asteaptă puțin pentru ca deviceID să se seteze
+  //asteapta putin pentru ca deviceID sa se seteze
   await new Promise(resolve => setTimeout(resolve, 1500));
 
   try {
@@ -158,7 +157,7 @@ window.onload = async () => {
       </div>
     `;
 
-    // Search functionality
+    //search functionality
     document.getElementById("search-btn").onclick = () => {
       document.getElementById("search-modal").style.display = "block";
       document.getElementById("search-input").focus();
@@ -207,7 +206,7 @@ window.onload = async () => {
           <div class="artist-card">
             <img src="${image}" alt="${artist.name}">
             <h4>${artist.name}</h4>
-            <p class="artist-followers">👥 ${followers} urmăritori</p>
+            <p class="artist-followers"> ${followers} urmăritori</p>
             <button onclick="window.open('${spotifyUrl}', '_blank')">Ascultă pe Spotify</button>
           </div>
         `;
@@ -352,7 +351,7 @@ function displaySearchResults(results) {
 
   // Albums
   if (results.albums?.items?.length > 0) {
-    html += "<h3 style='color:#1DB954; margin-top:15px;'>💿 Albume:</h3>";
+    html += "<h3 style='color:#1DB954; margin-top:15px;'> Albume:</h3>";
     html += results.albums.items.map(album => {
       const image = album.images?.[0]?.url ? `<img src="${album.images[0].url}" width="50" style="border-radius:5px; margin-right:10px;">` : "";
       const artists = album.artists?.map(a => a.name).join(", ") || "Artist necunoscut";
@@ -371,7 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("play-btn").onclick = async () => {
     if (currentDeviceId && player) {
       player.resume().then(() => {
-        console.log('▶ Redat');
+        console.log('Redat');
       });
     }
   };
@@ -379,7 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("pause-btn").onclick = async () => {
     if (currentDeviceId && player) {
       player.pause().then(() => {
-        console.log('⏸ Pus pe pauză');
+        console.log('Pus pe pauză');
       });
     }
   };

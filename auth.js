@@ -1,4 +1,4 @@
-// ---------- CONFIG ----------
+//CONFIG
 export const clientId = "13ff8254c56d4ad2910cee29e3c4d1aa";
 export const redirectUri = "http://127.0.0.1:5500/callback.html"; 
 export const scopes = [
@@ -11,7 +11,7 @@ export const scopes = [
   "user-read-playback-state"
 ].join(" ");
 
-// ---------- PKCE HELPERS ----------
+//PKCE HELPERS
 function generateRandomString(length) {
   let text = "";
   const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -32,7 +32,7 @@ function base64UrlEncode(arrayBuffer) {
   return btoa(string).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-// ---------- LOGIN ----------
+//LOGIN
 export async function loginWithSpotify() {
   const codeVerifier = generateRandomString(128);
   sessionStorage.setItem("code_verifier", codeVerifier);
@@ -51,7 +51,7 @@ export async function loginWithSpotify() {
   window.location = url.toString();
 }
 
-// ---------- CALLBACK: trade code → token ----------
+//CALLBACK: trade code - token
 export async function handleCallback() {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
@@ -74,7 +74,7 @@ export async function handleCallback() {
 
   if (data.access_token) {
     sessionStorage.setItem("access_token", data.access_token);
-    // Redirecționează către app.html sau pagina principală a aplicației
+    //redirectioneaza catre app.html sau pagina principala a aplicatiei
     window.location = "/app.html";
   } else {
     console.error("Nu s-a primit access token:", data);
